@@ -12,4 +12,9 @@ export default defineConfig({
       usePolling: true,
     },
   },
+  // https://vitest.dev/config/
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+  },
 })

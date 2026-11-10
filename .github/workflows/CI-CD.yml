@@ -3,19 +3,42 @@ name: CI/CD
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: github-pages
-  cancel-in-progress: false
 
 jobs:
+  # ---------- CI: runs on every push and pull request ----------
+  ci:
+    name: Lint, test & build check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  # ---------- CD: only on main, and only if CI passed ----------
   build:
+    needs: ci
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,6 +67,12 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
