@@ -6,6 +6,8 @@ Application React qui affiche les Pokémon de la [PokeAPI](https://pokeapi.co/),
 
 **Stack :** React 19, React Router 7, Vite 8, Axios, Vitest + Testing Library, oxlint, GitHub Actions, GitHub Pages.
 
+**Diagrammes UML :** [docs/UML.md](docs/UML.md) (classes, modèle de données, séquences, cas d'utilisation).
+
 ---
 
 ## Sommaire
