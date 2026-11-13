@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchAbilityDetails } from '../services/api.js';
+import { fetchAbilityDetails } from '../../services/api.js';
 
 function getDescription(ability) {
 	const englishEffect = ability.effect_entries?.find(entry => entry.language.name === 'en');

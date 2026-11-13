@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import api, { fetchTypeDetails } from '../services/api.js';
-import Pokecard from './Pokecard.jsx';
+import Pokecard from '../components/molecules/Pokecard.jsx';
 
 // Replace the real API module so no test ever hits the network.
 vi.mock('../services/api.js', () => ({

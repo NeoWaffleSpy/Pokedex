@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../services/api.js';
-import { readCustomPokemon } from '../services/customPokemonStorage.js';
-import AbilityCards from '../components/AbilityCards.jsx';
-import MoveCards from '../components/MoveCards.jsx';
-import TypeBadges from '../components/TypeBadges.jsx';
+import { useCustomPokemon } from '../state/customPokemonContext.js';
+import AbilityCards from '../components/organisms/AbilityCards.jsx';
+import MoveCards from '../components/organisms/MoveCards.jsx';
+import TypeBadges from '../components/atoms/TypeBadges.jsx';
 
 const MAX_BASE_STAT = 255;
 
@@ -12,47 +12,50 @@ function formatName(name) {
 	return name.replaceAll('-', ' ');
 }
 
+function getCustomError(storageError, savedPokemon) {
+	if (storageError) return 'Impossible de lire ce Pokémon personnalisé.';
+	if (!savedPokemon) return 'Pokémon personnalisé introuvable.';
+	return null;
+}
+
 function PokeDetails({ custom = false }) {
 	const { id } = useParams();
-	const [pokemon, setPokemon] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const { customPokemon, storageError } = useCustomPokemon();
+	const [apiPokemon, setApiPokemon] = useState(null);
+	const [apiLoading, setApiLoading] = useState(!custom);
+	const [apiError, setApiError] = useState(null);
+
+	// Custom Pokémon are already in the global store: derive them during render, no effect needed.
+	const savedPokemon = custom ? customPokemon.find(entry => entry.id === id) : null;
 
 	useEffect(() => {
-		let isMounted = true;
-		setPokemon(null);
-		setIsLoading(true);
-		setError(null);
+		if (custom) return undefined;
 
-		if (custom) {
-			try {
-				const savedPokemon = readCustomPokemon().find(entry => entry.id === id);
-				if (savedPokemon) setPokemon(savedPokemon);
-				else setError('Pokémon personnalisé introuvable.');
-			} catch (storageError) {
-				console.error('Erreur lors de la lecture du Pokémon personnalisé : ', storageError);
-				setError('Impossible de lire ce Pokémon personnalisé.');
-			} finally {
-				setIsLoading(false);
-			}
-		} else {
-			api.get(`pokemon/${id}`)
-				.then(response => {
-					if (isMounted) setPokemon(response.data);
-				})
-				.catch(requestError => {
-					console.error('Erreur lors de la récupération des détails du Pokémon: ', requestError);
-					if (isMounted) setError('Impossible de charger les détails de ce Pokémon.');
-				})
-				.finally(() => {
-					if (isMounted) setIsLoading(false);
-				});
-		}
+		let isMounted = true;
+		setApiPokemon(null);
+		setApiLoading(true);
+		setApiError(null);
+
+		api.get(`pokemon/${id}`)
+			.then(response => {
+				if (isMounted) setApiPokemon(response.data);
+			})
+			.catch(requestError => {
+				console.error('Erreur lors de la récupération des détails du Pokémon: ', requestError);
+				if (isMounted) setApiError('Impossible de charger les détails de ce Pokémon.');
+			})
+			.finally(() => {
+				if (isMounted) setApiLoading(false);
+			});
 
 		return () => {
 			isMounted = false;
 		};
 	}, [custom, id]);
+
+	const pokemon = custom ? savedPokemon : apiPokemon;
+	const isLoading = !custom && apiLoading;
+	const error = custom ? getCustomError(storageError, savedPokemon) : apiError;
 
 	if (isLoading) {
 		return <p className="pokemon-details-message">Chargement des détails…</p>;

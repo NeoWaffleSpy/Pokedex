@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addCustomPokemon, readCustomPokemon } from './customPokemonStorage.js';
+import { addCustomPokemon, readCustomPokemon } from '../services/customPokemonStorage.js';
 
 const STORAGE_KEY = 'pokedex.customPokemon.v1';
 

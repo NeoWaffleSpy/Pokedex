@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { addCustomPokemon } from '../services/customPokemonStorage.js';
+import { useCustomPokemon } from '../state/customPokemonContext.js';
 
 function AddPoke() {
 	const navigate = useNavigate();
+	const { addPokemon } = useCustomPokemon();
 	const [error, setError] = useState('');
 
 	function handleSubmit(event) {
@@ -32,7 +33,7 @@ function AddPoke() {
 		};
 
 		try {
-			addCustomPokemon(newPokemon);
+			addPokemon(newPokemon);
 			navigate('/');
 		} catch (storageError) {
 			console.error('Erreur lors de l’enregistrement du Pokémon personnalisé : ', storageError);

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import Pagination from './Pagination.jsx';
+import Pagination from '../components/molecules/Pagination.jsx';
 
 function renderPagination(props = {}) {
 	const handlers = { onPageChange: vi.fn(), onSearchChange: vi.fn() };

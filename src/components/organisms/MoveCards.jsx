@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchMoveDetails } from '../services/api.js';
-import TypeBadges from './TypeBadges.jsx';
+import { fetchMoveDetails } from '../../services/api.js';
+import TypeBadges from '../atoms/TypeBadges.jsx';
 
 const DISPLAYED_MOVES = 20;
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchTypeDetails } from '../services/api.js';
+import { fetchTypeDetails } from '../../services/api.js';
 
 function findTypeIcon(value) {
 	if (!value || typeof value !== 'object') return null;

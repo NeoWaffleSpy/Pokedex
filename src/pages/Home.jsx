@@ -1,19 +1,18 @@
-import Pagination from '../components/Pagination.jsx';
-import Pokecard from '../components/Pokecard.jsx';
+import Pagination from '../components/molecules/Pagination.jsx';
+import Pokecard from '../components/molecules/Pokecard.jsx';
 import { fetchPokemon } from '../services/api.js';
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { readCustomPokemon } from '../services/customPokemonStorage.js';
+import { useCustomPokemon } from '../state/customPokemonContext.js';
 
 const PAGE_SIZE = 50;
 
 function Home() {
 	const [pokedex, setPokedex] = useState([]);
-	const [customPokemon, setCustomPokemon] = useState([]);
+	const { customPokemon, storageError } = useCustomPokemon();
 	const [currentPage, setCurrentPage] = useState(0);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
-	const [storageError, setStorageError] = useState(null);
 	const allPokemon = useMemo(() => [...pokedex, ...customPokemon], [pokedex, customPokemon]);
 	const searchablePokemon = useMemo(
 		() => allPokemon.map(pokemon => ({
@@ -40,13 +39,6 @@ function Home() {
 	const isSearchPending = normalizedSearch !== deferredSearch;
 
 	useEffect(() => {
-		try {
-			setCustomPokemon(readCustomPokemon());
-		} catch (readError) {
-			console.error('Erreur lors de la lecture des Pokémon personnalisés : ', readError);
-			setStorageError('Impossible de lire les Pokémon personnalisés enregistrés.');
-		}
-
 		fetchPokemon()
 			.then(data => {
 				if (!Array.isArray(data.results)) {

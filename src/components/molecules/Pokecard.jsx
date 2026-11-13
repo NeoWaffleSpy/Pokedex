@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import api from '../services/api.js';
+import api from '../../services/api.js';
 import { Link } from 'react-router-dom';
-import TypeBadges from './TypeBadges.jsx';
+import TypeBadges from '../atoms/TypeBadges.jsx';
 
 const detailsCache = new Map();
 

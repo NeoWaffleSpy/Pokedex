@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import api, { fetchPokemon, fetchTypeDetails } from './api.js';
+import api, { fetchPokemon, fetchTypeDetails } from '../services/api.js';
 
 const POKEMON_KEY = 'pokedex.Pokemon.v2';
 
