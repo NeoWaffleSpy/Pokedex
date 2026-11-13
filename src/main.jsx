@@ -6,9 +6,11 @@ import App from './App.jsx'
 import CustomPokemonProvider from './state/CustomPokemonProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
-	<BrowserRouter basename={import.meta.env.BASE_URL}>
-		<CustomPokemonProvider>
-			<App />
-		</CustomPokemonProvider>
-	</BrowserRouter>,
+	<StrictMode>
+		<BrowserRouter basename={import.meta.env.BASE_URL}>
+			<CustomPokemonProvider>
+				<App />
+			</CustomPokemonProvider>
+		</BrowserRouter>
+	</StrictMode>,
 )

@@ -21,9 +21,8 @@ function getCustomError(storageError, savedPokemon) {
 function PokeDetails({ custom = false }) {
 	const { id } = useParams();
 	const { customPokemon, storageError } = useCustomPokemon();
-	const [apiPokemon, setApiPokemon] = useState(null);
-	const [apiLoading, setApiLoading] = useState(!custom);
-	const [apiError, setApiError] = useState(null);
+	// Last API response, tagged with the id it belongs to: { id, pokemon, error }.
+	const [apiResult, setApiResult] = useState(null);
 
 	// Custom Pokémon are already in the global store: derive them during render, no effect needed.
 	const savedPokemon = custom ? customPokemon.find(entry => entry.id === id) : null;
@@ -32,20 +31,14 @@ function PokeDetails({ custom = false }) {
 		if (custom) return undefined;
 
 		let isMounted = true;
-		setApiPokemon(null);
-		setApiLoading(true);
-		setApiError(null);
 
 		api.get(`pokemon/${id}`)
 			.then(response => {
-				if (isMounted) setApiPokemon(response.data);
+				if (isMounted) setApiResult({ id, pokemon: response.data, error: null });
 			})
 			.catch(requestError => {
 				console.error('Erreur lors de la récupération des détails du Pokémon: ', requestError);
-				if (isMounted) setApiError('Impossible de charger les détails de ce Pokémon.');
-			})
-			.finally(() => {
-				if (isMounted) setApiLoading(false);
+				if (isMounted) setApiResult({ id, pokemon: null, error: 'Impossible de charger les détails de ce Pokémon.' });
 			});
 
 		return () => {
@@ -53,9 +46,10 @@ function PokeDetails({ custom = false }) {
 		};
 	}, [custom, id]);
 
-	const pokemon = custom ? savedPokemon : apiPokemon;
-	const isLoading = !custom && apiLoading;
-	const error = custom ? getCustomError(storageError, savedPokemon) : apiError;
+	// Still loading while the stored result is missing or belongs to a previous id.
+	const isLoading = !custom && apiResult?.id !== id;
+	const pokemon = custom ? savedPokemon : apiResult?.pokemon;
+	const error = custom ? getCustomError(storageError, savedPokemon) : apiResult?.error;
 
 	if (isLoading) {
 		return <p className="pokemon-details-message">Chargement des détails…</p>;
